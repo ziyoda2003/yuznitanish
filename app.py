@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import pandas as pd
 
 # API ma'lumotlari
 API_URL = 'https://api.api-ninjas.com/v1/facedetect'
@@ -34,13 +35,28 @@ if uploaded_file is not None:
             if result is not None:  # result mavjudligini tekshirish
                 if isinstance(result, list) and len(result) > 0:  # Javob `list` formatida bo'lsa
                     st.success(f"Yuzlar aniqlangan: {len(result)}")
+                    
+                    # Natijalarni DataFrame ko'rinishida tayyorlash
+                    face_data = []
                     for idx, face in enumerate(result, start=1):
-                        st.write(f"Yuz {idx}:")
-                        st.json(face)  # Yuzning batafsil ma'lumotlari
+                        face_data.append({
+                            "Yuz raqami": idx,
+                            "Top (yuqori)": face.get('top'),
+                            "Left (chap)": face.get('left'),
+                            "Width (eni)": face.get('width'),
+                            "Height (bo'yi)": face.get('height')
+                        })
+                    
+                    # Pandas DataFrame yaratish
+                    df = pd.DataFrame(face_data)
+                    
+                    # Jadvalni ko'rsatish
+                    st.dataframe(df)
                 else:
                     st.warning("Hech qanday yuz aniqlanmadi.")
             else:
                 st.error("API dan hech qanday ma'lumot qaytarilmadi.")
+
 
 
 # import streamlit as st
